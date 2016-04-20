@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>jk</title>
+	<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?key=AIzaSyDSuYyou2ztTkmkTkknPATzLsk9vcyRgwk&sensor=false"></script>
+	<script src="script/ajax.js"></script>	
+
+<script>
+var json = null;
+ajax('test.json?time=123',function(str){
+		json = eval(str);
+		});
+var myCenter = new google.maps.LatLng(7.3006675,80.6339817);
+function initialize()
+{
+	var mapProp = {
+	  center:myCenter,
+	  zoom:14,
+	  mapTypeId:google.maps.MapTypeId.ROADMAP
+	  };
+	var map=new google.maps.Map(document.getElementById("googleMap")
+	  ,mapProp);
+	for(var i=0;i<json.length;i++){
+		var marker = new google.maps.Marker({
+		position:new google.maps.LatLng(json[i].n,json[i].e)
+		});
+		marker.setMap(map);
+		var infowindow = new google.maps.InfoWindow({
+		content:json[i].info
+		});
+		
+	}
+	google.maps.event.addListener(marker,'click',function(){
+		 infowindow.open(map,marker);	
+	});
+	
+	/**/
+	
+	}
+	google.maps.event.addDomListener(window, 'load', initialize);
+</script>
+<style type="text/css">
+html {height:100%}
+body {height:100%;margin:0;padding:0}
+#googleMap {height:100%}
+</style>
+</head>
+
+<body>
+<div id="googleMap" ></div>
+<!-- <input type="button" value="dddd" id="btu" class="zindex:10"> -->
+
+</body>
+</html>
