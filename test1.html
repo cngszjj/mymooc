@@ -10,6 +10,8 @@
 var map;
 var markersArray={};
 var myCenter = new google.maps.LatLng(7.3006675,80.6339817);
+var json = null;
+var jsonArray = {};
 function initialize()
 {
 
@@ -20,18 +22,65 @@ function initialize()
 	  };
 	map=new google.maps.Map(document.getElementById("googleMap")
 	  ,mapProp);
-	}
-	var json = null;
-		
-	function placeMarker(){
+}		
+function placeMarker(){
 		var date = new Date();
 		ajax('test.json?time='+date.getTime(),function(str){
 		json = eval(str);
 		});
-		
+		var id ;
+		// alert(getPropertyCount(markersArray));
+	if(getPropertyCount(markersArray)==0){
 		for(var i=0;i<json.length;i++){
-			
+			id = json[i].id;
+			var obj = new Object();
+			obj.id=json[i].id;
+			obj.bell = json[i].bell;
+			jsonArray[id]=obj;
 		 (function(){
+			 var p = i  ;
+			 var iconstr=null;
+			 if(json[i].bell==1){
+			 	iconstr="images/001.gif";
+			 		
+			 }else{
+			 	iconstr="images/marker1.png";
+			 }
+			
+		 	var marker = new google.maps.Marker({
+				position:new google.maps.LatLng(json[i].n,json[i].e),
+				draggable:true,
+				icon:iconstr
+				});
+			
+		     var infowindow = new google.maps.InfoWindow({
+	    		content:json[p].info
+	 		 });  
+		   google.maps.event.addListener(marker,'mouseover',function(){
+				infowindow.open(map,marker);
+			});	
+		   google.maps.event.addListener(marker,'mouseout',function(){
+		   		infowindow.close(map,marker);
+		   });
+		   marker.setMap(map);
+			markersArray[id] = marker;
+	 		
+		   
+		  })(); 
+  
+		}
+		}
+		else{
+
+		for(var i=0;i<json.length;i++){
+			id = json[i].id;
+			if(jsonArray[id].id==id){
+				if(jsonArray[id].bell!=json[i].bell){
+					var obj = new Object();
+					obj.id=json[i].id;
+					obj.bell = json[i].bell;
+					jsonArray[id]=obj;
+					(function(){
 			 var p = i  ;
 			 var iconstr=null;
 			 if(json[i].bell==1){
@@ -66,11 +115,27 @@ function initialize()
 			markersArray[id] = marker;
 	 		
 		   
-		  })(); 
+		  		})();
+
+				}
+			}
+			
+		  
 
 		  
 		}
+		}
+		
 	}
+function getPropertyCount(o){  
+   var n, count = 0;  
+   for(n in o){  
+      if(o.hasOwnProperty(n)){  
+         count++;  
+      }  
+   }  
+   return count;  
+}  
 function clearOverlays() {
     if (markersArray) {
       for (i in markersArray) {
@@ -78,20 +143,21 @@ function clearOverlays() {
       }
     }
   }
-	google.maps.event.addDomListener(window, 'load', initialize);
-	setInterval(placeMarker, 1000);
-	
+google.maps.event.addDomListener(window, 'load', initialize);
+setInterval(placeMarker, 1000);
+// initMarker();
+// initMarker();
 </script>
 <style type="text/css">
 html {height:100%}
-body {height:100%;margin:0;padding:0}
+ body {height:100%;margin:0;padding:0}
 #googleMap {height:100%}
+
 </style>
 </head>
 
 <body>
 <div id="googleMap" ></div>
-<!-- <input type="button" value="dddd" id="btu" class="zindex:10"> -->
 
 </body>
 </html>
